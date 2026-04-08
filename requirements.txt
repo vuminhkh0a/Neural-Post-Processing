@@ -1,0 +1,12 @@
+--extra-index-url https://pypi.org/simple
+
+torch==2.5.1
+torchaudio==2.5.1
+
+tqdm
+matplotlib
+librosa
+scipy
+numpy
+pesq
+pystoi
