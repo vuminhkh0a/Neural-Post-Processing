@@ -4,6 +4,8 @@ from data import *
 from train import * 
 import os
 import sys
+import argparse
+
 
 
 IRMAS_PATH_CP = './checkpoints/IRMAS_checkpoints'
@@ -20,8 +22,8 @@ DEVICE = 'cuda:1'
 EPOCHS = 30
 LR = 1e-4
 
-def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memory, lr):
-    device = torch.device(DEVICE if torch.cuda.is_available() else 'cpu')
+def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memory, lr, device):
+    device = torch.device(device if torch.cuda.is_available() else 'cpu')
     print(device)
     sys.stdout.flush()
 
@@ -43,15 +45,54 @@ def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memo
     return device, model, train_loader, val_loader, test_loader, checkpoint, optimizer
 
 
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--model_name", type=str, default=MODEL_NAME)
+    parser.add_argument("--dataset_name", type=str, default=DATASET_NAME)
+    parser.add_argument("--input_type", type=str, default=INPUT_TYPE)
+
+    parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
+    parser.add_argument("--num_workers", type=int, default=NUM_WORKERS)
+    parser.add_argument("--pin_memory", type=lambda x: x.lower() == "true", default=PIN_MEMORY)
+
+    parser.add_argument("--device", type=str, default=DEVICE)
+
+    parser.add_argument("--epochs", type=int, default=EPOCHS)
+    parser.add_argument("--lr", type=float, default=LR)
+
+    parser.add_argument("--mode", type=str, default='train')
+
+    return parser.parse_args()
+
+
 def main():
+    # args = get_args()
+
+    # device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(
+    #     model_name=args.model_name,
+    #     dataset_name=args.dataset_name,
+    #     input_type=args.input_type,
+    #     batch_size=args.batch_size,
+    #     num_workers=args.num_workers,
+    #     pin_memory=args.pin_memory,
+    #     lr=args.lr,
+    #     device=args.device
+    # )
+
     device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
                                                                                         dataset_name=DATASET_NAME, 
                                                                                         input_type=INPUT_TYPE, 
                                                                                         batch_size=BATCH_SIZE, 
                                                                                         num_workers=NUM_WORKERS, 
                                                                                         pin_memory=PIN_MEMORY,
-                                                                                        lr=LR)
+                                                                                        lr=LR,
+                                                                                        device=DEVICE)
+    
     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+
+    # if args.mode == 'train':
+    #     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
     model.load_state_dict(torch.load(checkpoint))
     mse, snr = evaluate(model, device, test_loader)
