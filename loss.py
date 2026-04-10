@@ -4,8 +4,9 @@ from pesq import pesq
 from pystoi import stoi
 
 
-MSE_loss = nn.MSELoss(reduction='mean')
+# Loss functions and evaluation metrics
 
+MSE_loss = nn.MSELoss(reduction='mean')
 MAE_loss = nn.L1Loss(reduction='mean')
 
 def snr_db_metric(original, reconstructed, eps=1e-12):

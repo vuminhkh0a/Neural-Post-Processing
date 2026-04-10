@@ -11,6 +11,21 @@ LIBRISPEECH_PATH = './data/LibriSpeech'
 
 class CustomDataset(Dataset):
     def __init__(self, degraded_wav_data_path, wav_data_path, dataset_name, is_train, transform=compose_transform, input_type="spectrogram", n_fft=1022, hop_length=512):
+        '''
+        Parameters:
+        - degraded_wav_data_path: List of paths to degraded wav files
+        - wav_data_path: List of paths to original wav files
+        - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
+        - is_train: Boolean indicating whether the dataset is for training or not
+        - transform: Transformations to be applied to the spectrograms (only for training)
+        - input_type: Type of input to be used (spectrogram or waveform)
+
+        Warnings:
+        - The length of the audio signal is changed to 1048064 samples (approximately 16.4 seconds at 64kHz) to ensure that all audio signals have the same length. 
+        - With the length of the audio signal =1048064, the spectrogram will have a shape of (512, 2048) with n_fft=1022 and hop_length=512, which reduces the
+        risk of shape mismatch during training between the encoder and decoder of the Unet-like models.
+
+        '''
         self.degraded_wav_data_path = degraded_wav_data_path
         self.wav_data_path = wav_data_path
         self.dataset_name = dataset_name
@@ -27,6 +42,13 @@ class CustomDataset(Dataset):
         return len(self.degraded_wav_data_path)
     
     def __getitem__(self, i):
+        '''
+        The DataLoader will call this function to get the i-th sample of the dataset.
+        Returns:
+        - x: Degraded audio data (either spectrogram or waveform)
+        - y: Original audio data (either spectrogram or waveform)
+
+        '''
         x, sr_x = librosa.load(self.degraded_wav_data_path[i], sr=64000)
         y, sr_y = librosa.load(self.wav_data_path[i], sr=64000)
 
@@ -51,6 +73,12 @@ class CustomDataset(Dataset):
     
 
     def change_length(self, x):
+        '''
+        Changes the length of the audio signal to the self.max_length.
+        Returns:
+        - x: Audio signal with the length of self.max_length
+
+        '''
         n = x.shape[0]
 
         if n > self.max_length:
@@ -63,11 +91,26 @@ class CustomDataset(Dataset):
         return x
 
     def to_spec(self, x):
+        '''
+        Converts the audio signal to a spectrogram using Short-Time Fourier Transform (STFT) and converts the amplitude to decibels (dB).
+        Returns:
+        - spec: Spectrogram of the audio signal in dB
+
+        '''
         spec = librosa.amplitude_to_db(np.abs(librosa.stft(x, n_fft=self.n_fft, hop_length=self.hop_length)))
         return spec
 
 
 def get_paths(dataset_name):
+    '''
+    Parameters:
+    - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
+
+    Returns:
+    - train_x, val_x, test_x: Lists of paths to degraded wav files for each split
+    - train_y, val_y, test_y: Lists of paths to original wav files for each split
+
+    '''
     train_x, val_x, test_x = [], [], []
     train_y, val_y, test_y = [], [], []
 
@@ -102,6 +145,15 @@ def get_paths(dataset_name):
 
 
 def get_datasets(dataset_name, input_type):
+    '''
+    Parameters:
+    - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
+    - input_type: Type of input to be used (spectrogram or waveform)
+    
+    Returns:
+    - train_dataset, val_dataset, test_dataset: CustomDataset objects for each split
+    
+    '''
 
     train_x, val_x, test_x, train_y, val_y, test_y = get_paths(dataset_name)
 
@@ -113,6 +165,14 @@ def get_datasets(dataset_name, input_type):
 
 
 def get_loaders(dataset_name, input_type, batch_size, num_workers=4, pin_memory=True):
+    '''
+    Parameters:
+    - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
+    - input_type: Type of input to be used (spectrogram or waveform)
+    
+    Returns:
+    - train_loader, val_loader, test_loader: DataLoader objects for each split
+    '''
     
     train_dataset, val_dataset, test_dataset = get_datasets(dataset_name, input_type)
 

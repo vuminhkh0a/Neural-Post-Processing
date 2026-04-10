@@ -7,47 +7,21 @@ import numpy as np
 IRMAS_PATH = './data/IRMAS'
 LIBRISPEECH_PATH = './data/LibriSpeech'
 
-def generate_mp3(bit_rate_kbps=32000):
-    for dataset_path in [IRMAS_PATH, LIBRISPEECH_PATH]:
-        DATASET_WAV_PATH = os.path.join(dataset_path, 'wav')
-        DATASET_MP3_PATH = os.path.join(dataset_path, 'mp3')
+# def generate_mp3(bit_rate_kbps=32000):
+#     for dataset_path in [IRMAS_PATH, LIBRISPEECH_PATH]:
+#         DATASET_WAV_PATH = os.path.join(dataset_path, 'wav')
+#         DATASET_MP3_PATH = os.path.join(dataset_path, 'mp3')
 
-        for fol_type in os.listdir(DATASET_WAV_PATH):
-            fol = os.path.join(DATASET_WAV_PATH, fol_type)
+#         for fol_type in os.listdir(DATASET_WAV_PATH):
+#             fol = os.path.join(DATASET_WAV_PATH, fol_type)
 
-            for file_path in os.listdir(fol):
-                wav_file_path = os.path.join(fol, file_path)
-                mp3_file_path = os.path.join(DATASET_MP3_PATH, fol_type, file_path)
-                mp3_file_path = os.path.splitext(mp3_file_path)[0] + ".mp3"
+#             for file_path in os.listdir(fol):
+#                 wav_file_path = os.path.join(fol, file_path)
+#                 mp3_file_path = os.path.join(DATASET_MP3_PATH, fol_type, file_path)
+#                 mp3_file_path = os.path.splitext(mp3_file_path)[0] + ".mp3"
 
-                waveform, sr = torchaudio.load(wav_file_path)
-                torchaudio.save(mp3_file_path, waveform, sr, format="mp3", compression=CodecConfig(bit_rate=bit_rate_kbps))
-
-def calculate_averange_length():
-    avg_lengths = []
-    for dataset_path in [IRMAS_PATH, LIBRISPEECH_PATH]:
-        total = 0.0
-        count = 0.0
-        DATASET_WAV_PATH = os.path.join(dataset_path, 'wav')
-
-        for fol_type in os.listdir(DATASET_WAV_PATH):
-            fol = os.path.join(DATASET_WAV_PATH, fol_type)
-
-            for file_path in os.listdir(fol):
-                wav_file_path = os.path.join(fol, file_path)
-
-                x_wav, sr_wav = librosa.load(wav_file_path, sr=None)
-
-                total += x_wav.shape[0]
-                count += 1
-
-        avg_lengths.append(total / count)
-
-    return avg_lengths
-
-# 200055.30551118212
-# 141956.9174014696
-
+#                 waveform, sr = torchaudio.load(wav_file_path)
+#                 torchaudio.save(mp3_file_path, waveform, sr, format="mp3", compression=CodecConfig(bit_rate=bit_rate_kbps))
 
 def adpcm_encode(x, num_bits=2):
     """
@@ -89,6 +63,9 @@ def adpcm_encode(x, num_bits=2):
     return np.array(indices, dtype=np.int32)
 
 def adpcm_decode(indices, num_bits=2):
+    '''
+    indices: numpy array int32
+    return: reconstructed signal (float32)'''
    
     q_levels = 2 ** num_bits
     max_q = q_levels // 2 - 1
@@ -115,3 +92,31 @@ def adpcm_decode(indices, num_bits=2):
         step_size = np.clip(step_size, 1e-4, 1.0)
 
     return np.array(output, dtype=np.float32)
+
+
+IRMAS_PATH = './data/IRMAS'
+LIBRISPEECH_PATH = './data/LibriSpeech'
+
+def generate_degraded_wav(num_bits=2):
+    '''Generate degraded wav files using ADPCM encoding and decoding'''
+
+    for dataset_path in [IRMAS_PATH, LIBRISPEECH_PATH]:
+            DATASET_WAV_PATH = os.path.join(dataset_path, 'wav')
+            DEGRADED_DATASET_WAV_PATH = os.path.join(dataset_path, 'degraded_wav')
+
+            for fol_type in os.listdir(DATASET_WAV_PATH):
+                fol = os.path.join(DATASET_WAV_PATH, fol_type)
+                degraded_fol = os.path.join(DEGRADED_DATASET_WAV_PATH, fol_type)
+
+                for file_path in os.listdir(fol):
+                    wav_file_path = os.path.join(fol, file_path)
+                    degraded_wav_file_path = os.path.join(degraded_fol, file_path)
+                    
+                    print(wav_file_path)
+                    print(degraded_wav_file_path)
+                    sys.stdout.flush()
+
+                    waveform, sr = librosa.load(wav_file_path)
+                    indices = adpcm_encode(waveform, num_bits=num_bits)
+                    x_degraded = adpcm_decode(indices, num_bits=num_bits)
+                    sf.write(data=x_degraded, file=degraded_wav_file_path, samplerate=sr)

@@ -3,6 +3,7 @@ from loss import *
 import sys
 from tqdm import tqdm
 
+# Training and evaluation functions
 
 def train_one_epoch(model, optimizer, device, loader):
     model.train()

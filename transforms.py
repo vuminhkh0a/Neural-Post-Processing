@@ -6,4 +6,5 @@ transform_frequency_masking = torchaudio.transforms.FrequencyMasking(freq_mask_p
 transform_time_masking = torchaudio.transforms.TimeMasking(time_mask_param=80)
 
 def compose_transform(x):
+    '''Apply frequency and time masking to the input tensor x.'''
     return transform_frequency_masking(transform_time_masking(x))
