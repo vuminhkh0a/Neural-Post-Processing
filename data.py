@@ -4,16 +4,18 @@ import librosa
 import numpy as np
 import os
 from transforms import *
+from transforms import compose_transform
 
 IRMAS_PATH = './data/IRMAS'
 LIBRISPEECH_PATH = './data/LibriSpeech'
 
 class CustomDataset(Dataset):
-    def __init__(self, degraded_wav_data_path, wav_data_path, dataset_name, is_train, input_type="spectrogram", n_fft=1022, hop_length=512):
+    def __init__(self, degraded_wav_data_path, wav_data_path, dataset_name, is_train, transform=compose_transform, input_type="spectrogram", n_fft=1022, hop_length=512):
         self.degraded_wav_data_path = degraded_wav_data_path
         self.wav_data_path = wav_data_path
         self.dataset_name = dataset_name
         self.is_train = is_train
+        self.transform = transform
 
         self.input_type = input_type
         self.n_fft = n_fft
@@ -25,8 +27,8 @@ class CustomDataset(Dataset):
         return len(self.degraded_wav_data_path)
     
     def __getitem__(self, i):
-        x, sr_x = librosa.load(self.degraded_wav_data_path[i], sr=32000)
-        y, sr_y = librosa.load(self.wav_data_path[i], sr=32000)
+        x, sr_x = librosa.load(self.degraded_wav_data_path[i], sr=64000)
+        y, sr_y = librosa.load(self.wav_data_path[i], sr=64000)
 
         x = self.change_length(x)
         y = self.change_length(y)
@@ -35,13 +37,15 @@ class CustomDataset(Dataset):
             x = self.to_spec(x)
             y = self.to_spec(y)
 
-
         elif self.input_type == "waveform":
             x = x
             y = y
 
         x = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
         y = torch.tensor(y, dtype=torch.float32).unsqueeze(0)
+
+        if self.transform and self.input_type == "spectrogram" and self.is_train:
+            x = self.transform(x)
 
         return x, y
     

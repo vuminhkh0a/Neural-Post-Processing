@@ -1,12 +1,9 @@
 import torch
 import numpy as np
+import torchaudio
 
-def min_max_scaler(x):
-    max_db = torch.max(x)
-    min_db = torch.min(x)
-    x = (x - min_db) / (max_db - min_db)
-    x = np.clip(x, 0.0, 1.0)
-    return x, max_db, min_db
+transform_frequency_masking = torchaudio.transforms.FrequencyMasking(freq_mask_param=80)
+transform_time_masking = torchaudio.transforms.TimeMasking(time_mask_param=80)
 
-def inverse_min_max_scaler(x, max_db, min_db):
-    return x * (max_db - min_db) + min_db
+def compose_transform(x):
+    return transform_frequency_masking(transform_time_masking(x))

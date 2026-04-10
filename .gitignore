@@ -1,8 +1,7 @@
 data/
+checkpoints/
 run.sh
-README.md
 log.txt
 ground_truth.wav
 input.wav
 output.wav
-checkpoints/

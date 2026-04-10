@@ -17,7 +17,7 @@ NUM_WORKERS = 4
 PIN_MEMORY= True
 DEVICE = 'cuda:1'
 
-EPOCHS = 100
+EPOCHS = 30
 LR = 1e-4
 
 def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memory, lr):

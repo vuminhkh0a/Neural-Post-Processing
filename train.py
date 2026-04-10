@@ -4,7 +4,6 @@ import sys
 from tqdm import tqdm
 
 
-
 def train_one_epoch(model, optimizer, device, loader):
     model.train()
     running_loss = 0.0
