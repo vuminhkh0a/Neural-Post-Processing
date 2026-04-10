@@ -1,16 +1,7 @@
 # Enhancing Compressed Audio Using Neural Post-Processing
 
 ## Overview
-This project 
-
----
-
-
-
-
-## Project Structure
-
-
+ 
 
 ## Installation
 
@@ -72,4 +63,4 @@ data
         test
 ```
 
-
+## Training and evaluating
