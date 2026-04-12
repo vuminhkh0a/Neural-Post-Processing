@@ -17,7 +17,7 @@ INPUT_TYPE = 'spectrogram'
 BATCH_SIZE = 2
 NUM_WORKERS = 4
 PIN_MEMORY= True
-DEVICE = 'cuda:1'
+DEVICE = 'cuda'
 
 EPOCHS = 30
 LR = 1e-4
@@ -31,6 +31,10 @@ def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memo
         model = Autoencoder().to(device)
     elif model_name == 'Unet':
         model = Unet().to(device)
+    elif model_name == 'Unet++':
+        model = smp.UnetPlusPlus(encoder_name="vgg11_bn", encoder_depth=5, activation=None, in_channels=1, classes=1).to(device)
+    elif model_name == 'UnetAtt':
+        model = AttU_Net(img_ch=1, output_ch=1).to(device)
 
     train_loader, val_loader, test_loader = get_loaders(dataset_name, input_type, batch_size, num_workers, pin_memory)
 
@@ -95,8 +99,8 @@ def main():
     #     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
     model.load_state_dict(torch.load(checkpoint))
-    mse, snr = evaluate(model, device, test_loader)
-    # mse, snr, pseq, stoi = evaluate(model, device, test_loader)
+    mse, snr = evaluate(model, device, test_loader, with_pesq_stoi=False)
+    # mse, snr, pseq, stoi = evaluate(model, device, test_loader, with_pesq_stoi=True)
 
 
     

@@ -1,13 +1,19 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
 --extra-index-url https://pypi.org/simple
 
 torch==2.5.1
 torchaudio==2.5.1
+torchvision==0.20.1
 
-tqdm
-matplotlib
-librosa
-soundfile
-scipy
-numpy
-pesq
-pystoi
+numpy==1.26.4
+scipy==1.11.4
+matplotlib==3.8.4
+tqdm==4.66.4
+
+librosa==0.10.2.post1
+soundfile==0.12.1
+
+pesq==0.0.4
+pystoi==0.3.3
+
+segmentation_models_pytorch==0.3.3

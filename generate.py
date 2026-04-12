@@ -3,6 +3,8 @@ from torchaudio.io import CodecConfig
 import librosa
 import os
 import numpy as np
+import sys
+import soundfile as sf
 
 IRMAS_PATH = './data/IRMAS'
 LIBRISPEECH_PATH = './data/LibriSpeech'
@@ -120,3 +122,4 @@ def generate_degraded_wav(num_bits=2):
                     indices = adpcm_encode(waveform, num_bits=num_bits)
                     x_degraded = adpcm_decode(indices, num_bits=num_bits)
                     sf.write(data=x_degraded, file=degraded_wav_file_path, samplerate=sr)
+

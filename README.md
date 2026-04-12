@@ -1,11 +1,12 @@
 # Enhancing Compressed Audio Using Neural Post-Processing
 
 ## Overview
+This is the project for the course ET4262E (Compression and Coding - HUST). We develop a U-Net based model to enhance the compressed audio.  
 
 
 ## Installation
 
-### 1. Install Python 3.13+
+### 1. Install Python 3.12+
 
 
 ### 2. Create environment
@@ -13,13 +14,13 @@
 
 #### Linux / macOS
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv npp_env
+source npp_env/bin/activate
 ```
 #### Windows (using command line)
 ```bash
-python -m venv venv
-venv\Scripts\activate
+python3 -m venv npp_env
+npp_env\Scripts\activate
 ```
 
 
@@ -95,7 +96,7 @@ python3 main.py \
 
 For example:
 ```bash
-python main.py \
+python3 main.py \
   --model_name Unet \
   --dataset_name IRMAS \
   --input_type spectrogram \

@@ -184,12 +184,30 @@ def get_loaders(dataset_name, input_type, batch_size, num_workers=4, pin_memory=
     return train_loader, val_loader, test_loader
 
 
-
-
 def spec_to_audio(spec_db, n_fft=1022, hop_length=512):
 
-    if spec_db.ndim == 3 or spec_db.ndim == 4:
-        spec_db = spec_db.squeeze()
+
+    if spec_db.ndim == 3:
+        spec_db = spec_db.squeeze(0)
+
+    if spec_db.ndim == 4:
+        spec_db = spec_db.squeeze(1).cpu().detach().numpy()
+        audios = []
+
+        for b in range(spec_db.shape[0]):
+            spec = librosa.db_to_amplitude(spec_db[b])
+
+            audio = librosa.griffinlim(
+                spec,
+                n_fft=n_fft,
+                hop_length=hop_length,
+                n_iter=256,
+            )
+            audios.append(audio)
+
+        return np.array(audios)
+
+
 
     spec = librosa.db_to_amplitude(spec_db)
 
@@ -197,8 +215,7 @@ def spec_to_audio(spec_db, n_fft=1022, hop_length=512):
         spec,
         n_fft=n_fft,
         hop_length=hop_length,
-        n_iter=32,
-        length=1048064
+        n_iter=256,
     )
 
     return audio
