@@ -11,10 +11,9 @@ import argparse
 IRMAS_PATH_CP = './checkpoints/IRMAS_checkpoints'
 LIBRISPEECH_PATH_CP = './checkpoints/LibriSpeech_checkpoints'
 
-MODEL_NAME = 'Unet'
+MODEL_NAME = 'Proposed'
 DATASET_NAME = 'IRMAS'
-INPUT_TYPE = 'spectrogram'
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 NUM_WORKERS = 4
 PIN_MEMORY= True
 DEVICE = 'cuda'
@@ -22,7 +21,7 @@ DEVICE = 'cuda'
 EPOCHS = 30
 LR = 1e-4
 
-def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memory, lr, device):
+def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, device):
     device = torch.device(device if torch.cuda.is_available() else 'cpu')
     print(device)
     sys.stdout.flush()
@@ -33,15 +32,17 @@ def init(model_name, dataset_name, input_type, batch_size, num_workers, pin_memo
         model = Unet().to(device)
     elif model_name == 'Unet++':
         model = smp.UnetPlusPlus(encoder_name="vgg11_bn", encoder_depth=5, activation=None, in_channels=1, classes=1).to(device)
-    elif model_name == 'UnetAtt':
+    elif model_name == 'UnetAttention':
         model = AttU_Net(img_ch=1, output_ch=1).to(device)
+    elif model_name == 'Proposed':
+        model = Proposed(img_ch=1, output_ch=1).to(device)
 
-    train_loader, val_loader, test_loader = get_loaders(dataset_name, input_type, batch_size, num_workers, pin_memory)
+    train_loader, val_loader, test_loader = get_loaders(dataset_name, batch_size, num_workers, pin_memory)
 
     if dataset_name == 'IRMAS':
-        checkpoint = os.path.join(IRMAS_PATH_CP, dataset_name + '_' + model_name + '_' + input_type + '.pth')
+        checkpoint = os.path.join(IRMAS_PATH_CP, dataset_name + '_' + model_name + '_' + '.pth')
     elif dataset_name == 'LibriSpeech':
-        checkpoint = os.path.join(LIBRISPEECH_PATH_CP, dataset_name + '_' + model_name + '_' + input_type + '.pth')
+        checkpoint = os.path.join(LIBRISPEECH_PATH_CP, dataset_name + '_' + model_name + '_' + '.pth')
 
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -54,7 +55,6 @@ def get_args():
 
     parser.add_argument("--model_name", type=str, default=MODEL_NAME)
     parser.add_argument("--dataset_name", type=str, default=DATASET_NAME)
-    parser.add_argument("--input_type", type=str, default=INPUT_TYPE)
 
     parser.add_argument("--batch_size", type=int, default=BATCH_SIZE)
     parser.add_argument("--num_workers", type=int, default=NUM_WORKERS)
@@ -76,7 +76,6 @@ def main():
     # device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(
     #     model_name=args.model_name,
     #     dataset_name=args.dataset_name,
-    #     input_type=args.input_type,
     #     batch_size=args.batch_size,
     #     num_workers=args.num_workers,
     #     pin_memory=args.pin_memory,
@@ -86,7 +85,6 @@ def main():
 
     device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
                                                                                         dataset_name=DATASET_NAME, 
-                                                                                        input_type=INPUT_TYPE, 
                                                                                         batch_size=BATCH_SIZE, 
                                                                                         num_workers=NUM_WORKERS, 
                                                                                         pin_memory=PIN_MEMORY,

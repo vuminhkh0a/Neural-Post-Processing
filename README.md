@@ -40,11 +40,11 @@ To obtain the datasets, please read the [Datasets](#datasets) section
 **Datasets description**
 - Original source
     - [IRMAS dataset](https://zenodo.org/records/1290750#.WzCwSRyxXMU)  
-    - [LibriSpeech dataset](https://www.openslr.org/60/)
+    - [LibriSpeech dataset](https://www.openslr.org/31/)
 
-- For IRMAS dataset, the validation and test dataset are obtained from `IRMAS-TestingData-Part1.zip` and the train dataset are obtained from `IRMAS-TestingData-Part2.zip`
+- For IRMAS dataset, the validation and test dataset are obtained from `IRMAS-TestingData-Part1.zip`, and the train dataset are obtained from `IRMAS-TestingData-Part2.zip`
 
-- For LibriSpeech dataset, the train, validation, and test datasets are obtained from `train-clean-100.tar.gz`, `dev-clean.tar.gz`, and `test-clean.tar.gz`, respectively 
+- For LibriSpeech dataset, the validation and the test dataset are obtained from `dev-clean-2.tar.gz`, and the train dataset is obtained from `train-clean-5.tar.gz`, 
 
 - The degraded audio files are obtained using ADPCM with `num_bits=2`. See [generate.py](generate.py)
 
@@ -84,7 +84,6 @@ data/
 python3 main.py \
   --model_name <Type of model> \
   --dataset_name <Type of dataset> \
-  --input_type <Type of input form> \
   --batch_size <Mini-batch size> \
   --num_workers <Number of DataLoader workers> \
   --pin_memory <true/false> \
@@ -99,7 +98,6 @@ For example:
 python3 main.py \
   --model_name Unet \
   --dataset_name IRMAS \
-  --input_type spectrogram \
   --batch_size 2 \
   --num_workers 4 \
   --pin_memory True \
@@ -110,7 +108,6 @@ python3 main.py \
 ```
 
 **Options**
-- model_name: `Unet`, `AutoEncoder`
+- model_name: `AutoEncoder`, `Unet`, `Unet++`, `UnetAttention`, `Proposed`
 - dataset_name: `IRMAS`, `LibriSpeech`
-- input_type: `spectrogram`, `waveform`
 - mode: `train`, `eval`

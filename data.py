@@ -10,7 +10,7 @@ IRMAS_PATH = './data/IRMAS'
 LIBRISPEECH_PATH = './data/LibriSpeech'
 
 class CustomDataset(Dataset):
-    def __init__(self, degraded_wav_data_path, wav_data_path, dataset_name, is_train, transform=compose_transform, input_type="spectrogram", n_fft=1022, hop_length=512):
+    def __init__(self, degraded_wav_data_path, wav_data_path, dataset_name, is_train, transform=compose_transform, n_fft=1022, hop_length=512):
         '''
         Parameters:
         - degraded_wav_data_path: List of paths to degraded wav files
@@ -18,7 +18,6 @@ class CustomDataset(Dataset):
         - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
         - is_train: Boolean indicating whether the dataset is for training or not
         - transform: Transformations to be applied to the spectrograms (only for training)
-        - input_type: Type of input to be used (spectrogram or waveform)
 
         Warnings:
         - The length of the audio signal is changed to 1048064 samples (approximately 16.4 seconds at 64kHz) to ensure that all audio signals have the same length. 
@@ -32,7 +31,6 @@ class CustomDataset(Dataset):
         self.is_train = is_train
         self.transform = transform
 
-        self.input_type = input_type
         self.n_fft = n_fft
         self.hop_length = hop_length
 
@@ -55,18 +53,13 @@ class CustomDataset(Dataset):
         x = self.change_length(x)
         y = self.change_length(y)
 
-        if self.input_type == "spectrogram":
-            x = self.to_spec(x)
-            y = self.to_spec(y)
-
-        elif self.input_type == "waveform":
-            x = x
-            y = y
+        x = self.to_spec(x)
+        y = self.to_spec(y)
 
         x = torch.tensor(x, dtype=torch.float32).unsqueeze(0)
         y = torch.tensor(y, dtype=torch.float32).unsqueeze(0)
 
-        if self.transform and self.input_type == "spectrogram" and self.is_train:
+        if self.transform and self.is_train:
             x = self.transform(x)
 
         return x, y
@@ -144,11 +137,10 @@ def get_paths(dataset_name):
     return train_x, val_x, test_x, train_y, val_y, test_y
 
 
-def get_datasets(dataset_name, input_type):
+def get_datasets(dataset_name):
     '''
     Parameters:
     - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
-    - input_type: Type of input to be used (spectrogram or waveform)
     
     Returns:
     - train_dataset, val_dataset, test_dataset: CustomDataset objects for each split
@@ -157,24 +149,23 @@ def get_datasets(dataset_name, input_type):
 
     train_x, val_x, test_x, train_y, val_y, test_y = get_paths(dataset_name)
 
-    train_dataset = CustomDataset(degraded_wav_data_path=train_x, wav_data_path=train_y, dataset_name=dataset_name, input_type=input_type, is_train=True)
-    val_dataset = CustomDataset(degraded_wav_data_path=val_x, wav_data_path=val_y, dataset_name=dataset_name, input_type=input_type, is_train=False)
-    test_dataset = CustomDataset(degraded_wav_data_path=test_x, wav_data_path=test_y, dataset_name=dataset_name, input_type=input_type, is_train=False)
+    train_dataset = CustomDataset(degraded_wav_data_path=train_x, wav_data_path=train_y, dataset_name=dataset_name, is_train=True)
+    val_dataset = CustomDataset(degraded_wav_data_path=val_x, wav_data_path=val_y, dataset_name=dataset_name, is_train=False)
+    test_dataset = CustomDataset(degraded_wav_data_path=test_x, wav_data_path=test_y, dataset_name=dataset_name, is_train=False)
 
     return train_dataset, val_dataset, test_dataset
 
 
-def get_loaders(dataset_name, input_type, batch_size, num_workers=4, pin_memory=True):
+def get_loaders(dataset_name, batch_size, num_workers=4, pin_memory=True):
     '''
     Parameters:
     - dataset_name: Name of the dataset (IRMAS or LibriSpeech)
-    - input_type: Type of input to be used (spectrogram or waveform)
     
     Returns:
     - train_loader, val_loader, test_loader: DataLoader objects for each split
     '''
     
-    train_dataset, val_dataset, test_dataset = get_datasets(dataset_name, input_type)
+    train_dataset, val_dataset, test_dataset = get_datasets(dataset_name)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=pin_memory)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, pin_memory=pin_memory)
