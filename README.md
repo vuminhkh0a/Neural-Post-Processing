@@ -40,17 +40,17 @@ To obtain the datasets, please read the [Datasets](#datasets) section
 **Datasets description**
 - Original source
     - [IRMAS dataset](https://zenodo.org/records/1290750#.WzCwSRyxXMU)  
-    - [LibriSpeech dataset](https://www.openslr.org/31/)
+    - [Mini LibriSpeech dataset](https://www.openslr.org/31/)
 
 - For IRMAS dataset, the validation and test dataset are obtained from `IRMAS-TestingData-Part1.zip`, and the train dataset are obtained from `IRMAS-TestingData-Part2.zip`
 
-- For LibriSpeech dataset, the validation and the test dataset are obtained from `dev-clean-2.tar.gz`, and the train dataset is obtained from `train-clean-5.tar.gz`, 
+- For Mini LibriSpeech dataset, the validation and the test dataset are obtained from `dev-clean-2.tar.gz`, and the train dataset is obtained from `train-clean-5.tar.gz`, 
 
 - The degraded audio files are obtained using ADPCM with `num_bits=2`. See [generate.py](generate.py)
 
 **Datasets installation**
 
-- These datasets are not included in this repository due to the `data/` folder's size and some constraints of my sponsor's local server (no permission to install Git LFS to push that folder since I am not the admin). So please download them from the zip file of the following link instead: [Dataset link](https://drive.google.com/drive/folders/1GB4fvLmA41TZ-W7qMPD9Q0evgFkD-sEI?usp=sharing) (~23Gb)
+- These datasets are not included in this repository due to the `data/` folder's size and some constraints of my sponsor's local server (no permission to install Git LFS to push that folder since I am not the admin). So please download them from the zip file of the following link instead: [Dataset link](https://drive.google.com/drive/folders/1GB4fvLmA41TZ-W7qMPD9Q0evgFkD-sEI?usp=sharing) (~7Gb)
 , then extract the archive to obtain the `data/` folder and move it to the `Neural-Post-Processing/` folder.
 
 - The `data/` folder tree should be:
