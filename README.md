@@ -108,6 +108,6 @@ python3 main.py \
 ```
 
 **Options**
-- model_name: `AutoEncoder`, `Unet`, `Unet++`, `UnetAttention`, `Proposed`
+- model_name: `AutoEncoder`, `Unet`, `UnetPlusPlus`, `UnetAttention`, `Proposed`
 - dataset_name: `IRMAS`, `LibriSpeech`
 - mode: `train`, `eval`

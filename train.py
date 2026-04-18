@@ -6,6 +6,7 @@ from data import *
 
 # Training and evaluation functions
 
+
 def train_one_epoch(model, optimizer, device, loader):
     model.train()
     running_loss = 0.0

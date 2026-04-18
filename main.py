@@ -11,14 +11,15 @@ import argparse
 IRMAS_PATH_CP = './checkpoints/IRMAS_checkpoints'
 LIBRISPEECH_PATH_CP = './checkpoints/LibriSpeech_checkpoints'
 
-MODEL_NAME = 'Proposed'
+MODEL_NAME = 'UnetAttention'
 DATASET_NAME = 'IRMAS'
-BATCH_SIZE = 1
+BATCH_SIZE = 2
 NUM_WORKERS = 4
 PIN_MEMORY= True
 DEVICE = 'cuda'
 
-EPOCHS = 30
+
+EPOCHS = 7
 LR = 1e-4
 
 def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, device):
@@ -30,7 +31,7 @@ def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, devi
         model = Autoencoder().to(device)
     elif model_name == 'Unet':
         model = Unet().to(device)
-    elif model_name == 'Unet++':
+    elif model_name == 'UnetPlusPlus':
         model = smp.UnetPlusPlus(encoder_name="vgg11_bn", encoder_depth=5, activation=None, in_channels=1, classes=1).to(device)
     elif model_name == 'UnetAttention':
         model = AttU_Net(img_ch=1, output_ch=1).to(device)
@@ -40,9 +41,9 @@ def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, devi
     train_loader, val_loader, test_loader = get_loaders(dataset_name, batch_size, num_workers, pin_memory)
 
     if dataset_name == 'IRMAS':
-        checkpoint = os.path.join(IRMAS_PATH_CP, dataset_name + '_' + model_name + '_' + '.pth')
+        checkpoint = os.path.join(IRMAS_PATH_CP, dataset_name + '_' + model_name + '.pth')
     elif dataset_name == 'LibriSpeech':
-        checkpoint = os.path.join(LIBRISPEECH_PATH_CP, dataset_name + '_' + model_name + '_' + '.pth')
+        checkpoint = os.path.join(LIBRISPEECH_PATH_CP, dataset_name + '_' + model_name + '.pth')
 
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -83,6 +84,9 @@ def main():
     #     device=args.device
     # )
 
+    # if args.mode == 'train':
+    #     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+
     device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
                                                                                         dataset_name=DATASET_NAME, 
                                                                                         batch_size=BATCH_SIZE, 
@@ -93,8 +97,7 @@ def main():
     
     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
-    # if args.mode == 'train':
-    #     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+    
 
     model.load_state_dict(torch.load(checkpoint))
     mse, snr = evaluate(model, device, test_loader, with_pesq_stoi=False)
