@@ -116,7 +116,7 @@ python3 main.py \
 Please download the [model weights](link) before using this feature. Extract the zip file of the link to acquire the `checkpoints/` folder and make sure the `checkpoints/` folder is inside the `Neural-Post-Processing/` folder.
  
 
-Please check the [live demo video](link).
+Please check the [live demo video](https://www.youtube.com/watch?v=LZ4XNYuigeM).
 
 To run the live demo
 ```bash
