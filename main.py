@@ -72,28 +72,28 @@ def get_args():
 
 
 def main():
-    # args = get_args()
+    args = get_args()
 
-    # device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(
-    #     model_name=args.model_name,
-    #     dataset_name=args.dataset_name,
-    #     batch_size=args.batch_size,
-    #     num_workers=args.num_workers,
-    #     pin_memory=args.pin_memory,
-    #     lr=args.lr,
-    #     device=args.device
-    # )
+    device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(
+        model_name=args.model_name,
+        dataset_name=args.dataset_name,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
+        pin_memory=args.pin_memory,
+        lr=args.lr,
+        device=args.device
+    )
 
-    # if args.mode == 'train':
-    #     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+    if args.mode == 'train':
+        train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
-    device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
-                                                                                        dataset_name=DATASET_NAME, 
-                                                                                        batch_size=BATCH_SIZE, 
-                                                                                        num_workers=NUM_WORKERS, 
-                                                                                        pin_memory=PIN_MEMORY,
-                                                                                        lr=LR,
-                                                                                        device=DEVICE)
+    # device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
+    #                                                                                     dataset_name=DATASET_NAME, 
+    #                                                                                     batch_size=BATCH_SIZE, 
+    #                                                                                     num_workers=NUM_WORKERS, 
+    #                                                                                     pin_memory=PIN_MEMORY,
+    #                                                                                     lr=LR,
+    #                                                                                     device=DEVICE)
     
     train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
@@ -102,8 +102,6 @@ def main():
     model.load_state_dict(torch.load(checkpoint))
     mse, snr = evaluate(model, device, test_loader, with_pesq_stoi=False)
     # mse, snr, pseq, stoi = evaluate(model, device, test_loader, with_pesq_stoi=True)
-
-
     
 
     print(f'{DATASET_NAME} - {MODEL_NAME} test results:\n')
