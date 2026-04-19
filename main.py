@@ -19,7 +19,7 @@ PIN_MEMORY= True
 DEVICE = 'cuda'
 
 
-EPOCHS = 11
+EPOCHS = 30
 LR = 1e-4
 
 def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, device):
