@@ -45,13 +45,10 @@ def init(model_name, audio_type, device):
     return model, device
 
 def waveform_to_spec(x):
-    return np.abs(librosa.stft(x, n_fft=1022, hop_length=512))
+    return librosa.amplitude_to_db(np.abs(librosa.stft(x, n_fft=1022, hop_length=512)))
 
 def spec_to_waveform(spec_db, n_fft=1022, hop_length=512):
-
     spec = librosa.db_to_amplitude(spec_db)
-
-    spec = np.nan_to_num(spec, nan=0.0, posinf=1e3, neginf=0.0)
 
     audio = librosa.griffinlim(
         spec,
@@ -94,13 +91,14 @@ def change_length(x):
 def process(audio, model_name, audio_type, bitrate):
     model, device = init(model_name, audio_type, "cuda")
 
-    sr, original_waveform = audio
+    # sr, original_waveform = audio
+    original_waveform, sr = librosa.load(audio, sr=64000)
 
-    if not np.issubdtype(original_waveform.dtype, np.floating):
-        original_waveform = original_waveform.astype(np.float32)
+    # if not np.issubdtype(original_waveform.dtype, np.floating):
+    #     original_waveform = original_waveform.astype(np.float32)
 
-    if original_waveform.ndim > 1:
-        original_waveform = librosa.to_mono(original_waveform.T)
+    # if original_waveform.ndim > 1:
+    #     original_waveform = librosa.to_mono(original_waveform.T)
 
     original_waveform = change_length(original_waveform)
     original_spec = waveform_to_spec(original_waveform)
@@ -140,18 +138,20 @@ def process(audio, model_name, audio_type, bitrate):
 with gr.Blocks() as demo:
     gr.Markdown("# Enhancing Compressed Audio Using Neural Post-Processing")
 
-    audio_input = gr.Audio(label="Input Audio", type="numpy")
+    # audio_input = gr.Audio(label="Input Audio", type="numpy")
+    audio_input = gr.Audio(label="Input Audio", type="filepath")
 
     with gr.Row():
-        model_choice = gr.Radio(
-            ["Autoencoder", "Unet", "UnetPlusPlus", "UnetAttention", "Proposed"],
-            value="Proposed",
-            label="Model"
+        model_choice = gr.Dropdown(
+            choices=["Autoencoder", "Unet", "UnetPlusPlus", "UnetAttention", "Proposed"],
+            value=None,
+            label="Model",
+            allow_custom_value=False
         )
 
-        audio_type = gr.Radio(
-            ["Speech", "Music"],
-            value="Speech",
+        audio_type = gr.Dropdown(
+            choices=["Speech", "Music"],
+            value=None,
             label="Audio Type"
         )
 

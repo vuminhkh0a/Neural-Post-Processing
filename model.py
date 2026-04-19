@@ -48,6 +48,7 @@ class ConvBlock(nn.Module):
 class Unet(nn.Module):
     def __init__(self):
         super().__init__()
+    
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
         self.down_conv1 = ConvBlock(1, 64)
         self.down_conv2 = ConvBlock(64, 128)
@@ -304,7 +305,6 @@ class RM(nn.Module):
 class Proposed(nn.Module):
     def __init__(self,img_ch=3,output_ch=1):
         super(Proposed,self).__init__()
-        
         self.Maxpool = nn.MaxPool2d(kernel_size=2,stride=2)
 
         self.Conv1 = ConvBlock(img_ch,64)
@@ -374,5 +374,5 @@ class Proposed(nn.Module):
         d1 = self.Conv_1x1(d2)
 
         out = self.rm(d1)
-
+        
         return out

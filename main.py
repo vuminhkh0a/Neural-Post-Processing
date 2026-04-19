@@ -12,14 +12,14 @@ IRMAS_PATH_CP = './checkpoints/IRMAS_checkpoints'
 LIBRISPEECH_PATH_CP = './checkpoints/LibriSpeech_checkpoints'
 
 MODEL_NAME = 'UnetAttention'
-DATASET_NAME = 'IRMAS'
+DATASET_NAME = 'LibriSpeech'
 BATCH_SIZE = 2
 NUM_WORKERS = 4
 PIN_MEMORY= True
 DEVICE = 'cuda'
 
 
-EPOCHS = 7
+EPOCHS = 11
 LR = 1e-4
 
 def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, device):
