@@ -6,7 +6,7 @@ This is the project for the course ET4262E (Compression and Coding - HUST). We d
 
 ## Installation
 
-### 1. Install Python 3.12+
+### 1. Install Python 3.12.3 (must)
 
 
 ### 2. Create environment
@@ -50,34 +50,50 @@ To obtain the datasets, please read the [Datasets](#datasets) section
 
 **Datasets installation**
 
-- These datasets are not included in this repository due to the `data/` folder's size and some constraints of my sponsor's local server (no permission to install Git LFS to push that folder since I am not the admin). So please download them from the zip file of the following link instead: [Dataset link](https://drive.google.com/drive/folders/1GB4fvLmA41TZ-W7qMPD9Q0evgFkD-sEI?usp=sharing) (~7Gb)
+- These datasets are not included in this repository due to the `data/` folder's size and some constraints of my sponsor's local server (no permission to install Git LFS to push that folder since I am not the admin). So please download them from  `data.zip` file of the following link instead: [Dataset link](https://drive.google.com/drive/folders/1GB4fvLmA41TZ-W7qMPD9Q0evgFkD-sEI) (~7Gb)
 , then extract the archive to obtain the `data/` folder and make sure the `data/` folder is inside the `Neural-Post-Processing/` folder.
 
-- The `data/` folder tree should be:
+Warning: The extracted zip folder usually be `data/data/`. Please move the last `data/` folder to the  `Neural-Post-Processing/` folder.
+
+- The `Neural-Post-Processing/` folder tree should be like this:
 ```bash
-data/
-├── IRMAS/
-│   ├── degraded_wav/
-│   │   ├── val/
-│   │   ├── train/
-│   │   └── test/
-│   └── wav/
-│       ├── val/
-│       ├── train/
-│       └── test/
-│
-├── LibriSpeech/
-│   ├── degraded_wav/
-        ├── val/
-│       ├── train/
-│       └── test/
-│   └── wav/
-        ├── val/
-│       ├── train/
-│       └── test/
+Neural-Post-Processing/
+  data/
+  ├── IRMAS/
+  │   ├── degraded_wav/
+  │   │   ├── val/
+  │   │   ├── train/
+  │   │   └── test/
+  │   └── wav/
+  │       ├── val/
+  │       ├── train/
+  │       └── test/
+  │
+  ├── LibriSpeech/
+  │   ├── degraded_wav/
+          ├── val/
+  │       ├── train/
+  │       └── test/
+  │   └── wav/
+          ├── val/
+  │       ├── train/
+  │       └── test/
+  ...
 ```
 
 ## Training and evaluating
+
+Please create a `checkpoints/` folder in the `Neural-Post-Processing/` folder or downloading the checkpoints (see [live demo](#live-demo))
+
+The `Neural-Post-Processing/` folder tree should be like this:
+```bash
+Neural-Post-Processing/
+  checkpoints/
+  ├── IRMAS_checkpoints/
+  ├── LibriSpeech_checkpoints/
+  ...
+```
+
 **Training script**
 
 ```bash
@@ -112,14 +128,30 @@ python3 main.py \
 - dataset_name: `IRMAS`, `LibriSpeech`
 - mode: `train`, `eval`
 
-### 5. Live demo
-Please download the [model weights](link) before using this feature. Extract the zip file of the link to acquire the `checkpoints/` folder and make sure the `checkpoints/` folder is inside the `Neural-Post-Processing/` folder.
- 
+Warning: make sure to use `'cuda'` device and `device: 'cuda'` is printed from the program.
+
+## Live demo
+Please download the [model weights](https://drive.google.com/drive/folders/1GB4fvLmA41TZ-W7qMPD9Q0evgFkD-sEI) before using this feature. Extract `checkpoints.zip` file of the link to acquire the `checkpoints/` folder and make sure the `checkpoints/` folder is inside the `Neural-Post-Processing/` folder.
+
+Warning: 
+- The extracted zip folder usually be `checkpoints/checkpoints/`. Please move the last `checkpoints/` folder to the  `Neural-Post-Processing/` folder. 
+- The weights of the models can behave differently, so we recommend training the models from scratch.
+- Make sure `'cuda'` device is used, otherwise the program will run slowly.
+- The `UnetAttention` and `Unet++` weight for `LibriSpeech` dataset are not available due to limited storaged problem.
+
+The `Neural-Post-Processing/` folder tree should be like this:
+```bash
+Neural-Post-Processing/
+  checkpoints/
+  ├── IRMAS_checkpoints/
+  ├── LibriSpeech_checkpoints/
+  ...
+```
 
 Please check the [live demo video](https://www.youtube.com/watch?v=LZ4XNYuigeM) (please watch until the end).
 
-To run the live demo
+**To run the live demo**
 ```bash
 python3 demo_app.py
 ```
-Navigate the program's given link to run demo at your local device.
+Navigate the program's given link to run demo at your local device. Make sure 'cuda' device is used.

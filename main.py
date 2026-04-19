@@ -11,8 +11,8 @@ import argparse
 IRMAS_PATH_CP = './checkpoints/IRMAS_checkpoints'
 LIBRISPEECH_PATH_CP = './checkpoints/LibriSpeech_checkpoints'
 
-MODEL_NAME = 'UnetAttention'
-DATASET_NAME = 'LibriSpeech'
+MODEL_NAME = 'Unet'
+DATASET_NAME = 'IRMAS'
 BATCH_SIZE = 2
 NUM_WORKERS = 4
 PIN_MEMORY= True
@@ -24,7 +24,7 @@ LR = 1e-4
 
 def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, device):
     device = torch.device(device if torch.cuda.is_available() else 'cpu')
-    print(device)
+    print(f'device: {device}')
     sys.stdout.flush()
 
     if model_name == 'Autoencoder':
@@ -44,7 +44,6 @@ def init(model_name, dataset_name, batch_size, num_workers, pin_memory, lr, devi
         checkpoint = os.path.join(IRMAS_PATH_CP, dataset_name + '_' + model_name + '.pth')
     elif dataset_name == 'LibriSpeech':
         checkpoint = os.path.join(LIBRISPEECH_PATH_CP, dataset_name + '_' + model_name + '.pth')
-
 
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
@@ -83,9 +82,10 @@ def main():
         lr=args.lr,
         device=args.device
     )
+    epochs = args.epochs
 
     if args.mode == 'train':
-        train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+        train_one_dataset(epochs, model, optimizer, device, train_loader, val_loader, checkpoint)
 
     # device, model, train_loader, val_loader, test_loader, checkpoint, optimizer = init(model_name=MODEL_NAME, 
     #                                                                                     dataset_name=DATASET_NAME, 
@@ -95,7 +95,7 @@ def main():
     #                                                                                     lr=LR,
     #                                                                                     device=DEVICE)
     
-    train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
+    # train_one_dataset(EPOCHS, model, optimizer, device, train_loader, val_loader, checkpoint)
 
     
 
